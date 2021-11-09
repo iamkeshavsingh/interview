@@ -2,13 +2,18 @@ import React from "react";
 import { Formik } from "formik";
 import { blogAxios } from "../../utils/axios";
 import { useNavigate } from "react-router-dom";
+import { signinSchema } from "../../utils/validationSchema";
+import { useDispatch } from "react-redux";
+import { fetchUserDetails } from "../../store/actions/user/user.action";
 
 function SignIn() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   async function handleSubmit(data) {
-    const userDetails = await blogAxios.post("/api-token-auth/", data);
-    localStorage.setItem("token", userDetails.data.token);
+    const response = await blogAxios.post("/api-token-auth/", data);
+    localStorage.setItem("token", response.data.token);
+    dispatch(fetchUserDetails());
     navigate({
       pathname: "/blog",
     });
@@ -21,9 +26,10 @@ function SignIn() {
           username: "",
           password: "",
         }}
+        validationSchema={signinSchema}
         onSubmit={handleSubmit}
       >
-        {({ handleChange, values, handleSubmit }) => (
+        {({ handleChange, values, handleSubmit, errors, touched }) => (
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="">Username</label>
@@ -35,6 +41,9 @@ function SignIn() {
                 value={values.username}
                 name="username"
               />
+              {touched.username && errors.username && (
+                <div className="error">{errors.username}</div>
+              )}
             </div>
             <div className="form-group">
               <label htmlFor="">Password</label>
@@ -46,6 +55,9 @@ function SignIn() {
                 value={values.password}
                 name="password"
               />
+              {touched.password && errors.password && (
+                <div className="error">{errors.password}</div>
+              )}
             </div>
             <button className="btn btn-primary">Login</button>
           </form>

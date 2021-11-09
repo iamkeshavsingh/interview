@@ -2,13 +2,27 @@ import React, { useEffect, useState } from "react";
 import { Formik } from "formik";
 import withAuth from "../../hoc/withAuth";
 import { blogAxios, blogAxiosProtected } from "../../utils/axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import useUsers from '../../hooks/useUsers';
+import { userType } from '../../utils/enum';
 
 function EditBlog() {
   const [tags, setTags] = useState([]);
   const location = useLocation();
   const [blog, setBlog] = useState({});
   const [isLoading, setLoading] = useState(true);
+  const { users, type } = useUsers();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (Object.keys(blog).length === 0 || !type) return;
+    if (!(type === userType.admin || users[0]?.id == blog.author)) {
+      navigate({
+        pathname: '/blog'
+      });
+      return null;
+    }
+  }, [type, users, blog]);
 
   const listArray = location.pathname.split("/");
   const id = listArray[listArray.length - 1];
@@ -37,11 +51,14 @@ function EditBlog() {
 
   if (isLoading) return null;
 
+
   const initState = {
     title: blog.title,
     body_text: blog.body_text,
     tags: blog.tags,
   };
+
+
   return (
     <div className="mt-4 p-3">
       <h4>Edit Blog</h4>
@@ -79,11 +96,12 @@ function EditBlog() {
                   className="mr-2"
                   name="tags"
                   onChange={handleChange}
+                  checked={values.tags.includes(String(tag.id)) && 'checked'}
                 />
                 <label htmlFor="">{tag.name}</label>
               </div>
             ))}
-            <button className="btn btn-primary">Create</button>
+            <button className="btn btn-primary">Save</button>
           </form>
         )}
       </Formik>

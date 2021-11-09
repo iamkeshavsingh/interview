@@ -61,6 +61,7 @@ function CreateBlog() {
                   className="mr-2"
                   name="tags"
                   onChange={handleChange}
+                  checked={values.tags.includes(String(tag.id)) && 'checked'}
                 />
                 <label htmlFor="">{tag.name}</label>
               </div>

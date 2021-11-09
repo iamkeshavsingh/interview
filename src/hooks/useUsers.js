@@ -1,25 +1,12 @@
-import { useEffect, useState } from "react";
-import { blogAxiosProtected } from "../utils/axios";
-import { userType } from "../utils/enum";
+import { useSelector } from "react-redux";
 
 function useUsers() {
-  const [users, setUsers] = useState({});
-  const [type, setType] = useState(null);
 
-  useEffect(() => {
-    blogAxiosProtected.get("/users/").then((response) => {
-      var userList = response.data;
-      if (userList.length > 1) {
-        return setType(userType.admin);
-      }
-      setType(userType.normal);
-      setUsers(userList[0]);
-    });
-  }, []);
+  const { userDetails, userType } = useSelector(({ user }) => user);
 
   return {
-    users,
-    type,
+    users: userDetails,
+    type: userType,
   };
 }
 

@@ -1,20 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Blog from "../../components/Blog/Blog";
-import { fetchBlogsApi } from "../../utils/apis";
-import { blogAxios } from "../../utils/axios";
+import { fetchBlogs } from "../../store/actions/blogs/blogs.action";
 
 function BlogList() {
-  const [blogs, setBlogs] = useState([]);
+
+  const blogs = useSelector(({ blogs }) => blogs.blogs);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    blogAxios.get(fetchBlogsApi).then((response) => {
-      setBlogs(response.data);
-    });
+    if (!blogs)
+      dispatch(fetchBlogs());
   }, []);
+
 
   return (
     <div className="d-flex mt-5" style={{ flexWrap: "wrap" }}>
-      {blogs.map((blog) => (
+      {blogs?.map((blog) => (
         <Blog {...blog} />
       ))}
     </div>

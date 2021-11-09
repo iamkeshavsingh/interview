@@ -1,4 +1,14 @@
+import { blogAxiosProtected } from "../../../utils/axios";
 import { SAVE_USER_DETAILS, MARK_POST_VIEWED } from "./user.constant";
+
+
+
+export const fetchUserDetails = () => {
+  return async function (dispatch) {
+    const userDetails = await blogAxiosProtected.get('/users/');
+    dispatch(saveUser(userDetails.data));
+  }
+}
 
 export const saveUser = (user) => {
   return {
